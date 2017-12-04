@@ -11,7 +11,7 @@ class HilanHelper {
     private init = async () => {
         try {
             this.pageContent = await this.getIframeContent();
-            this.addPrevMonthListener();
+            this.addButtonListener('#ctl00_mp_calendar_prev');            
             this.getCalendarCalculatedData();
         }
         catch (err) {
@@ -66,7 +66,8 @@ class HilanHelper {
             console.log('add click listener to previous month');
             this.getCalendarCalculatedData();
 
-            this.addPrevMonthListener();
+            this.addButtonListener('#ctl00_mp_calendar_prev');
+            this.addButtonListener('#ctl00_mp_calendar_next');
         }, 900)
     }
 
@@ -85,9 +86,9 @@ class HilanHelper {
     //     return dfd.promise();
     // }
 
-    private addPrevMonthListener = async () => {
-        $(this.pageContent.querySelector('#ctl00_mp_calendar_prev')).ready(() => {
-            $(this.pageContent.querySelector('#ctl00_mp_calendar_prev')).on('click', this.prevMonthClicked);
+    private addButtonListener =  (selector) => {
+        $(this.pageContent.querySelector(selector)).ready(() => {
+            $(this.pageContent.querySelector(selector)).on('click', this.prevMonthClicked);
         });
 
     }
