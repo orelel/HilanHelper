@@ -1,13 +1,24 @@
 .my-stats ul{
     width: 150px;
-    height: 100px;
+    height: 130px;
     border: 1px solid lightgray;
     padding: 0;
     color: black;
     list-style: none;
+    background: rgb(226, 239, 243);
 }
 
 .my-stats li{
     font-size: 13px;
     padding: 5px;
+}
+
+.my-stats li:nth-child(n+1) span:last-child{
+    font-weight: bold;
+}
+
+.my-stats li.current-month{
+    color:rgb(63, 63, 158);
+    text-decoration: underline;
+    padding-bottom: 5px;
 }

@@ -3,34 +3,46 @@ declare var $;
 class HilanHelper {
     private pageContent;
     private calendarCurrentMonthYear;
+    private exceptionArray;
+
 
     constructor() {
         this.init();
+        this.exceptionArray = ['חופשה', 'מחלה', 'חג', 'מילואים']
 
     }
     private init = async () => {
         try {
             this.pageContent = await this.getIframeContent();
-            this.addButtonListener('#ctl00_mp_calendar_prev');            
+            this.addButtonListener('#ctl00_mp_calendar_prev');
             this.getCalendarCalculatedData();
         }
         catch (err) {
             //TODO: something
         }
-    }  
+    }
 
     private getCalendarCalculatedData = () => {
 
         this.calendarCurrentMonthYear = this.pageContent.querySelector('#ctl00_mp_currentMonth').value;
         const totalWorkHours = this.getTotalWorkHoursInMinutes();
-        const totalShouldWorkHours = this.getTotalShouldWorkHoursInMinutes(this.calendarCurrentMonthYear);
+        const totalShouldWorkHours = this.getTotalShouldWorkHoursInMinutes();
         const missingHours = totalShouldWorkHours - totalWorkHours;
+        const avarageHoursLeftPerDay = this.getAvarageHoursPerDay();
+
+        const getHoursMinutesFormat = (timeMinutes: number) => {
+            if (timeMinutes < 0) {
+                return 0
+            }
+            return `${Math.floor((timeMinutes / 60))}:${Math.floor(timeMinutes % 60)}`
+        }
 
         this.printMyStats({
             currentMonth: this.calendarCurrentMonthYear,
-            shouldWorkHours: `${Math.floor((totalShouldWorkHours / 60))}:${totalShouldWorkHours % 60}`,
-            workHours: `${Math.floor((totalWorkHours / 60))}:${totalWorkHours % 60}`,
-            missingHours: missingHours < 0 ? 0 : `${Math.floor((missingHours / 60))}:${missingHours % 60}`
+            shouldWorkHours: getHoursMinutesFormat(totalShouldWorkHours),
+            workHours: getHoursMinutesFormat(totalWorkHours),
+            missingHours: getHoursMinutesFormat(missingHours),
+            averageHoursPerDay: getHoursMinutesFormat(avarageHoursLeftPerDay)
         })
     }
 
@@ -56,6 +68,10 @@ class HilanHelper {
                         <span>שעות חסרות</span>
                         <span>${options.missingHours}</span>
                     </li>
+                    <li class='avarage-hours-per-day'>
+                    <span>ממוצע נותר ליום</span>
+                    <span>${options.averageHoursPerDay}</span>
+                </li>
                 </ul>
              </div>`
         );
@@ -86,7 +102,7 @@ class HilanHelper {
     //     return dfd.promise();
     // }
 
-    private addButtonListener =  (selector) => {
+    private addButtonListener = (selector) => {
         $(this.pageContent.querySelector(selector)).ready(() => {
             $(this.pageContent.querySelector(selector)).on('click', this.prevMonthClicked);
         });
@@ -94,10 +110,10 @@ class HilanHelper {
     }
 
     private getHoursDayArray() {
-        
+
         const hoursDataArray = (index) => {
             const arr = [];
-            [].forEach.call(this.pageContent.querySelectorAll(`#calendar_container tr:nth-child(n+3) tr:nth-child(${index}) td`), (elem) => {
+            [].forEach.call(this.pageContent.querySelectorAll(`#calendar_container tr:nth-child(n+3) tr:nth-child(${index}) td:nth-child(1)`), (elem) => {
                 arr.push($(elem).text())
             });
             return arr;
@@ -118,29 +134,55 @@ class HilanHelper {
             }, 0);
     }
 
-    private getTotalShouldWorkHoursInMinutes = (calendarCurrentMonthYearString: string = '') => {
-        const toUsDate = (str) => {
-            const dateArr = str.split('/');
-            if (dateArr.length === 3) {
-                return new Date(`${dateArr[1]}/${dateArr[0]}/${dateArr[2]}`)
-            }
-            return new Date();
+    private getUSDate(strDate) {
+        const dateArr = strDate.split('/');
+        if (dateArr.length === 3) {
+            return new Date(`${dateArr[1]}/${dateArr[0]}/${dateArr[2]}`)
         }
+        throw Error(`invalid date format: ${strDate}`);
+    }
 
+    private getWorkingDays = () => {
         const hoursDayArray = this.getHoursDayArray();
         const workDays = hoursDayArray.hours
             .filter(cellValue => Number(cellValue))
-            .filter(day => this.isNotWeekend(day, toUsDate(calendarCurrentMonthYearString)))
+            .filter(day => this.isNotWeekend(day, this.getUSDate(this.calendarCurrentMonthYear)))
             .length;
 
-        const exceptionArray = ['חופשה', 'מחלה', 'חג', 'מילואים']
+        return workDays;
+    }
 
+    private getExceptionsDays = () => {
+        const hoursDayArray = this.getHoursDayArray();
         const exceptionsDays = hoursDayArray.data
-            .filter(cellValue => exceptionArray.indexOf(cellValue.trim()) > -1)
+            .filter(cellValue => this.exceptionArray.indexOf(cellValue.trim()) > -1)
             .length
+        return exceptionsDays;
+    }
+
+    private getTotalShouldWorkHoursInMinutes = () => {
+        const hoursDayArray = this.getHoursDayArray();
+        const workDays = this.getWorkingDays();
+
+        const exceptionsDays = this.getExceptionsDays()
 
         return (workDays - exceptionsDays) * 9 * 60;
 
+    }
+
+    private getAvarageHoursPerDay = () => {
+        const hoursDayArray = this.getHoursDayArray();
+        const alreayWorkDays = hoursDayArray.data
+            .filter(cellValue => cellValue.match(/[0-9][0-9]?:[0-9][0-9]/))
+            .length;
+
+        const exceptionsDays = this.getExceptionsDays();
+        const daysLeftToWork = this.getWorkingDays() - exceptionsDays - alreayWorkDays;
+        if (daysLeftToWork > 0) {
+            return (this.getTotalShouldWorkHoursInMinutes() - this.getTotalWorkHoursInMinutes()) / daysLeftToWork;
+        }else{
+            return 0;
+        }
     }
 
 
