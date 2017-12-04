@@ -1,0 +1,42 @@
+{
+  "name": "Hilan helper",
+  "description": "TBD",
+  "version": "1.0",
+  "permissions": [
+    "tabs",
+    "http://*/*",
+    "https://*/*"
+  ],
+  "browser_action": {
+    "default_title": "Hilan helper",
+    "default_icon": "assets/icon.png",
+    "default_popup": "html/popup.html"
+  },
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://interwise.net.hilan.co.il/*"
+      ],
+      "js": [
+        "js/ext/jquery-3.2.1.min.js",
+        "js/ext/jquery.livequery.min.js",
+        "js/hilan-helper.js",
+        "js/logic.js"
+      ],
+      "css": [
+        "css/mystyles.css"
+      ],
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    "css/mystyles.css"
+  ],
+  "manifest_version": 2
+}
