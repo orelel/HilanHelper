@@ -1,4 +1,4 @@
-class Utility{
+class Utility {
     public static isNotWeekend(day, calendarDate = new Date()) {
         const currentDate = new Date(calendarDate);
         currentDate.setDate(day);
@@ -17,12 +17,19 @@ class Utility{
         }
         return 0;
     }
-    
+
     public static getUSDate(strDate) {
         const dateArr = strDate.split('/');
         if (dateArr.length === 3) {
             return new Date(`${dateArr[1]}/${dateArr[0]}/${dateArr[2]}`)
         }
         throw Error(`invalid date format: ${strDate}`);
+    }
+
+    public static getHoursMinutesFormat(timeMinutes: number) {
+        if (timeMinutes < 0) {
+            return 0
+        }
+        return `${Math.floor((timeMinutes / 60))}:${Math.floor(timeMinutes % 60)}`
     }
 }

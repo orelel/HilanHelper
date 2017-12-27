@@ -9,7 +9,7 @@ class TimeCalculation{
         }
     }
 
-    public static getTotalWorkHoursInMinutes = (pageContent): number => {
+    public static getTotalWorkHoursInMinutes(pageContent): number {
         const hoursDayArray = TimeCalculation.getHoursDayArray(pageContent);
 
         return hoursDayArray.data
@@ -20,7 +20,7 @@ class TimeCalculation{
 
    
 
-    private static getWorkingDays = (pageContent, calendarCurrentMonthYear) => {
+    private static getWorkingDays (pageContent, calendarCurrentMonthYear){
         const hoursDayArray = TimeCalculation.getHoursDayArray(pageContent);
         const workDays = hoursDayArray.hours
             .filter(cellValue => Number(cellValue))
@@ -30,7 +30,7 @@ class TimeCalculation{
         return workDays;
     }
 
-    private static getExceptionsDays = (pageContent) => {
+    private static getExceptionsDays(pageContent) {
         const hoursDayArray = TimeCalculation.getHoursDayArray(pageContent);
         const exceptionsDays = hoursDayArray.data
             .filter(cellValue => TimeCalculation.exceptionArray.indexOf(cellValue.trim()) > -1)
@@ -38,7 +38,7 @@ class TimeCalculation{
         return exceptionsDays;
     }
 
-    public static getTotalShouldWorkHoursInMinutes = (pageContent, calendarCurrentMonthYear) => {
+    public static getTotalShouldWorkHoursInMinutes (pageContent, calendarCurrentMonthYear) {
         const hoursDayArray = TimeCalculation.getHoursDayArray(pageContent);
         const workDays = TimeCalculation.getWorkingDays(pageContent, calendarCurrentMonthYear);
 
@@ -48,7 +48,7 @@ class TimeCalculation{
 
     }
 
-    public static getAvarageHoursPerDay = (pageContent, calendarCurrentMonthYear) => {
+    public static getAvarageHoursPerDay (pageContent, calendarCurrentMonthYear) {
         const hoursDayArray = TimeCalculation.getHoursDayArray(pageContent);
         const alreayWorkDays = hoursDayArray.data
             .filter(cellValue => cellValue.match(/[0-9][0-9]?:[0-9][0-9]/))

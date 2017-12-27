@@ -1,60 +1,38 @@
-declare var $;
-const CURRENT_MONTH_SELECTOR = '#ctl00_mp_currentMonth';
-const PREV_MONTH_BUTTON_SELECTOR = '#ctl00_mp_calendar_prev';
-const NEXT_MONTH_BUTTON_SELECTOR = '#ctl00_mp_calendar_next';
-
 
 class HilanHelper {
-    private pageContent;
-    private calendarCurrentMonthYear;    
+    private pageContent;   
 
     constructor() {
         this.init();
     }
-    private init = async () => {
+    private async init() {
         try {
-            this.pageContent = await DomManipulation.getIframeContent();
-            DomManipulation.addButtonListener(this.pageContent, PREV_MONTH_BUTTON_SELECTOR, this.onMonthChanged);
+            this.pageContent = await DomManipulation.getIframeContent();            
             this.getCalendarCalculatedData();
+            DomManipulation.watchElement(this.pageContent, CALENDAR_CONTAINER_SELECTOR,this.getCalendarCalculatedData);
         }
         catch (err) {
-            //TODO: something
+            console.log(`oops! some error occured: ${err}`);
         }
     }
 
     private getCalendarCalculatedData = () => {
 
-        this.calendarCurrentMonthYear = this.pageContent.querySelector(CURRENT_MONTH_SELECTOR).value;
+        const calendarCurrentMonthYear = DomManipulation.getCurrentMonthAndYear(this.pageContent);
         const totalWorkHours = TimeCalculation.getTotalWorkHoursInMinutes(this.pageContent);
-        const totalShouldWorkHours = TimeCalculation.getTotalShouldWorkHoursInMinutes(this.pageContent,this.calendarCurrentMonthYear);
+        const totalShouldWorkHours = TimeCalculation.getTotalShouldWorkHoursInMinutes(this.pageContent, calendarCurrentMonthYear);
         const missingHours = totalShouldWorkHours - totalWorkHours;
-        const avarageHoursLeftPerDay = TimeCalculation.getAvarageHoursPerDay(this.pageContent,this.calendarCurrentMonthYear);
-
-        const getHoursMinutesFormat = (timeMinutes: number) => {
-            if (timeMinutes < 0) {
-                return 0
-            }
-            return `${Math.floor((timeMinutes / 60))}:${Math.floor(timeMinutes % 60)}`
-        }
+        const avarageHoursLeftPerDay = TimeCalculation.getAvarageHoursPerDay(this.pageContent, calendarCurrentMonthYear);
+       
 
         DomManipulation.printMyStats(this.pageContent, {
-            currentMonth: this.calendarCurrentMonthYear,
-            shouldWorkHours: getHoursMinutesFormat(totalShouldWorkHours),
-            workHours: getHoursMinutesFormat(totalWorkHours),
-            missingHours: getHoursMinutesFormat(missingHours),
-            averageHoursPerDay: getHoursMinutesFormat(avarageHoursLeftPerDay)
+            currentMonth: calendarCurrentMonthYear,
+            shouldWorkHours: Utility.getHoursMinutesFormat(totalShouldWorkHours),
+            workHours: Utility.getHoursMinutesFormat(totalWorkHours),
+            missingHours: Utility.getHoursMinutesFormat(missingHours),
+            averageHoursPerDay: Utility.getHoursMinutesFormat(avarageHoursLeftPerDay)
         });
-    }
-
-    private onMonthChanged = () => {
-        setTimeout(() => {
-            console.log('add click listener to previous month');
-            this.getCalendarCalculatedData();
-
-            DomManipulation.addButtonListener(this.pageContent, PREV_MONTH_BUTTON_SELECTOR, this.onMonthChanged);
-            DomManipulation.addButtonListener(this.pageContent, NEXT_MONTH_BUTTON_SELECTOR, this.onMonthChanged);
-        }, 900)
-    }
+    }    
 
 
 
