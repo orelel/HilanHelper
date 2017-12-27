@@ -18,8 +18,7 @@
         "https://interwise.net.hilan.co.il/*"
       ],
       "js": [
-        "js/ext/jquery-3.2.1.min.js",
-        "js/ext/jquery.livequery.min.js",
+        "js/ext/jquery-3.2.1.min.js",      
         "js/core/hilan-helper.js",
         "js/core/dom-manipulation.js",
         "js/core/time-calculation.js",
