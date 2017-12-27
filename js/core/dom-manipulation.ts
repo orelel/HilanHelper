@@ -78,14 +78,7 @@ class DomManipulation {
                 </ul>
              </div>`
         );
-    }
-
-    public static addButtonListener(pageContent, selector, callbackFn) {
-        $(pageContent.querySelector(selector)).ready(() => {
-            $(pageContent.querySelector(selector)).on('click', callbackFn);
-        });
-
-    }
+    } 
 
     public static getCalendarMonthData(pageContent, index: CalendarData) {
         const arr = [];
