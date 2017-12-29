@@ -4,6 +4,8 @@ class HilanHelper {
 
     constructor() {
         this.init();
+        this.addSettingsEventListener();
+       
     }
     private async init() {
         try {
@@ -33,6 +35,17 @@ class HilanHelper {
             averageHoursPerDay: Utility.getHoursMinutesFormat(avarageHoursLeftPerDay)
         });
     }    
+
+    private addSettingsEventListener = () =>{
+        console.log('adding message listener');
+        chrome.runtime.onMessage.addListener((request) => {
+            console.log('i\'m in message listener');
+            if(request.user_work_hours_in_day){
+                TimeCalculation.DEFAULT_WORK_HOURS_IN_DAY = request.user_work_hours_in_day;
+                this.getCalendarCalculatedData();
+            }
+        });
+    }
 
 
 

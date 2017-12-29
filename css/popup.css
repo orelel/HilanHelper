@@ -1,0 +1,27 @@
+body{
+    width: 150px;
+    height: 100px;
+}
+.row{
+    height:20px;
+    margin:2px;
+}
+.left{
+    float: left;
+}
+.right{
+    float: right;
+}
+
+#work-hours-input{
+    width: 30px;
+}
+
+.under-line{
+    text-decoration: underline;
+}
+
+.text{
+    font-size: 14px;
+    font-family: Arial, Helvetica, sans-serif;
+}

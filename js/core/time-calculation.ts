@@ -1,6 +1,7 @@
 class TimeCalculation{
 
-    static exceptionArray = ['חופשה', 'מחלה', 'חג', 'מילואים']
+    static exceptionArray = ['חופשה', 'מחלה', 'חג', 'מילואים'];
+    static DEFAULT_WORK_HOURS_IN_DAY = 9;
 
     private static getHoursDayArray(pageContent) {
         return {
@@ -44,7 +45,7 @@ class TimeCalculation{
 
         const exceptionsDays = TimeCalculation.getExceptionsDays(pageContent)
 
-        return (workDays - exceptionsDays) * 9 * 60;
+        return (workDays - exceptionsDays) * TimeCalculation.DEFAULT_WORK_HOURS_IN_DAY * 60;
 
     }
 
